@@ -1,0 +1,17 @@
+{
+  "name": "@razuresoft/0kay-free-model",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Our Free Model for 0KAY — a local OpenAI-compatible adapter that exposes the opencode Zen free model lane as a 0KAY provider.",
+  "repository": "https://github.com/razureink/0KAY-free-model.git",
+  "main": "src/server.mjs",
+  "scripts": {
+    "start": "node src/server.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
