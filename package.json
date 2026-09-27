@@ -1,6 +1,6 @@
 {
   "name": "@razureink/0kay-free-model",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "type": "module",
   "description": "Our Free Model for 0KAY — a local OpenAI-compatible adapter that exposes the opencode Zen free model lane as a 0KAY provider.",
