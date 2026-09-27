@@ -70,7 +70,18 @@ async function main() {
     server.listen(PORT, HOST, resolve)
   })
 
-  await registerProvider({ port: PORT, key, catalog: config.catalog, log })
+  // Register the provider. Retry with backoff so boot order does not matter: if
+  // Core is not up yet (or comes up after the plugin), it is picked up within
+  // seconds instead of waiting for the next catalog refresh.
+  const ensureRegistered = async () => {
+    let delay = 2000
+    for (;;) {
+      if (await registerProvider({ port: PORT, key, catalog: config.catalog, log })) return
+      await new Promise(resolve => setTimeout(resolve, delay))
+      delay = Math.min(delay * 2, 60000)
+    }
+  }
+  void ensureRegistered()
 
   const refresh = async () => {
     const catalog = await fetchCatalog()
