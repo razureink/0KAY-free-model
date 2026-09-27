@@ -29,11 +29,14 @@ it registers the *Our Free Model* provider with Core automatically.
 ## Install
 
 ```sh
-# from the published repository
+# from the published repository (scoped name resolves to razureink/0KAY-free-model)
+0kay-pm install @razureink/0kay-free-model
+
+# or by owner/repo
 0kay-pm install razureink/0KAY-free-model
 
 # or from a local checkout of this repository
-0kay-pm install --source . razureink/0KAY-free-model
+0kay-pm install --source . @razureink/0kay-free-model
 ```
 
 Then open 0KAY → Settings → Providers: **Our Free Model** appears with the free
