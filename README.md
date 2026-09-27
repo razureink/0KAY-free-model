@@ -4,8 +4,10 @@ A 0KAY plugin that exposes the public [opencode Zen](https://opencode.ai) free
 model lane — MiMo V2.6, Muse Spark 1.3, Nemotron, Ling, Space Bunny and the rest
 — to 0KAY as an ordinary provider. **No account, no sign-up, no API key.**
 
-It is a port of [zouyuxuan122/dsh-our-free-model](https://github.com/zouyuxuan122/dsh-our-free-model)
-(MIT), re-shaped as a standalone 0KAY service plugin.
+It is a port of the original project
+**[zouyuxuan122/dsh-our-free-model](https://github.com/zouyuxuan122/dsh-our-free-model)**
+(MIT) — <https://github.com/zouyuxuan122/dsh-our-free-model> — re-shaped as a
+standalone 0KAY service plugin.
 
 ## How it works
 
@@ -62,3 +64,9 @@ models, and they show up in the chat model picker. (No pairing is required;
   lane can change or disappear at any time.
 - `npm test` runs the unit tests (routing, headers, fingerprint, shaping, budget,
   stream projection).
+
+## Credits
+
+- Original project: **dsh-our-free-model** by zouyuxuan122 —
+  <https://github.com/zouyuxuan122/dsh-our-free-model> (MIT). The upstream wire
+  facts, catalog, effort policy and message/stream shaping are ported from it.
