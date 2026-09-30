@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { endpointFor, wireFor, gatewayHeaders, applyFingerprint, baseModelId, sessionForConversation } from '../src/upstream.mjs'
 import { buildCatalog, isFreeLane, parseListing } from '../src/catalog.mjs'
-import { budgetFor } from '../src/effort.mjs'
+import { budgetFor, resolveLevel } from '../src/effort.mjs'
 import { toResponseInput, toClaudeMessages, toToolDefs } from '../src/messages.mjs'
 import { buildPayload } from '../src/forward.mjs'
 import { Projector, feed } from '../src/stream.mjs'
@@ -120,4 +120,15 @@ test('session ids are stable per conversation and gateway-shaped', () => {
   assert.equal(a, b)
   assert.match(a, /^ses_[0-9a-f]{12}[0-9A-Za-z]{14}$/)
   assert.equal(baseModelId('mimo-v2.6-flash-free (deep)'), 'mimo-v2.6-flash-free')
+})
+
+test('0kay thinking levels map onto effort rungs and change the budget', () => {
+  const model = { reasoning: true, maxOutput: 64000, canDisableThinking: true }
+  assert.equal(resolveLevel('max', model).id, 'deep')
+  assert.equal(resolveLevel('high', model).id, 'deep')
+  assert.equal(resolveLevel('medium', model).id, 'balanced')
+  assert.equal(resolveLevel('low', model).id, 'light')
+  assert.equal(resolveLevel('off', model).id, 'light')
+  assert.equal(resolveLevel('deep', model).id, 'deep')
+  assert.ok(budgetFor('max', model, 32768, undefined) > budgetFor('low', model, 32768, undefined))
 })

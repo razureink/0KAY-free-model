@@ -23,9 +23,23 @@ export const ALWAYS_THINKING_FACTOR = 2
 /** Below this the answer itself cannot land, so no level may go lower. */
 export const MIN_BUDGET = 512
 
+/**
+ * Accept both the adapter's own ids (light/balanced/deep) and the 0kay thinking
+ * levels the clients send (off/low/medium/high/max) so the level actually maps
+ * to a budget instead of silently falling back to balanced.
+ */
+const ALIASES = {
+  off: 'light', none: 'light',
+  low: 'light', light: 'light',
+  medium: 'balanced', balanced: 'balanced',
+  high: 'deep', deep: 'deep', max: 'deep', very_high: 'deep',
+}
+
 export function resolveLevel(level, model) {
   if (!model || model.reasoning !== true) return undefined
-  return LEVELS.find(candidate => candidate.id === level) ?? LEVELS.find(candidate => candidate.id === DEFAULT_LEVEL)
+  const key = typeof level === 'string' ? level.trim().toLowerCase() : ''
+  const id = ALIASES[key] ?? key
+  return LEVELS.find(candidate => candidate.id === id) ?? LEVELS.find(candidate => candidate.id === DEFAULT_LEVEL)
 }
 
 function usableTokens(value) {
