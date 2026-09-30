@@ -6,5 +6,9 @@
   "repository": "https://github.com/razureink/0KAY-free-model.git",
   "requires": [],
   "start": ["node", "src/server.mjs"],
-  "ports": { "http": 8791 }
+  "ports": { "http": 8791 },
+  "permissions": {
+    "api": { "requires": ["POST /api/providers"] },
+    "egress": ["opencode.ai", "*.opencode.ai"]
+  }
 }
