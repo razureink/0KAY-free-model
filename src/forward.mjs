@@ -115,14 +115,22 @@ async function callUpstream(wire, payload, session, requestId, signal, ua) {
  * @param {(message:string) => void} [deps.log]
  */
 export function createServer({ getConfig, log = () => {} }) {
+  const handler = createHandler({ getConfig, log })
   return http.createServer((req, res) => {
-    void handle(req, res).catch(error => {
+    void handler(req, res).catch(error => {
       log(`request failed: ${error?.message ?? error}`)
       if (!res.headersSent) sendError(res, 500, String(error?.message ?? error), 'server_error')
       else res.end()
     })
   })
+}
 
+/**
+ * The request handler, usable by both the HTTP server and the stdio bridge
+ * (Core hosts the plugin as a child process, so no port is opened). When
+ * `config.key` is empty, authentication is skipped (in-process caller).
+ */
+export function createHandler({ getConfig, log = () => {} }) {
   async function handle(req, res) {
     const config = getConfig()
     const url = new URL(req.url ?? '/', 'http://localhost')
@@ -131,7 +139,7 @@ export function createServer({ getConfig, log = () => {} }) {
     if (req.method === 'OPTIONS') { res.writeHead(204, corsHeaders()); res.end(); return }
     if (path === '/' || path === '/health') { sendJson(res, 200, { ok: true, service: '0kay-free-model', models: config.catalog.length }); return }
     if (config.enabled === false) { sendError(res, 503, 'our free model is switched off', 'service_unavailable'); return }
-    if (!keyMatches(bearerOf(req), config.key)) { sendError(res, 401, 'missing or invalid API key'); return }
+    if (config.key && !keyMatches(bearerOf(req), config.key)) { sendError(res, 401, 'missing or invalid API key'); return }
 
     if (req.method === 'GET' && (path === '/v1/models' || path === '/models')) {
       sendJson(res, 200, {
@@ -214,6 +222,7 @@ export function createServer({ getConfig, log = () => {} }) {
       usage: outcome.usage ?? { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
     })
   }
+  return handle
 }
 
 function writeRaw(res, payload) {
