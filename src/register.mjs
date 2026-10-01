@@ -2,8 +2,9 @@
  * Register (or refresh) the free-lane provider with Core.
  *
  * 0KAY has no plugin capability for providers, so the adapter adds one through
- * Core's own HTTP API. Core trusts loopback machine callers, so no PIN is
- * needed; failures are non-fatal because Core may not be up yet.
+ * Core's own HTTP API. Core trusts loopback machine callers, so a PIN is not
+ * required for `POST /api/providers`; failures are non-fatal because Core may
+ * not be up yet.
  *
  * The request is sent with node:http instead of fetch on purpose. Undici's
  * fetch always attaches `Sec-Fetch-Mode: cors`, which older Core builds treat
@@ -11,6 +12,11 @@
  * was silently never registered on 0kay-pm deployments. A raw request carries
  * no Fetch metadata headers at all and is always recognised as a machine
  * caller, whichever Core version is running.
+ *
+ * When the operator has provisioned a Core machine credential
+ * (`CORE_PAIR_TOKEN` or `CORE_API_TOKEN`), it is attached so the call keeps
+ * working even if loopback trust is tightened. With no token the request is
+ * unchanged.
  *
  * @module src/register.mjs
  */
@@ -26,6 +32,11 @@ function coreBase() {
   return String(value).replace(/\/+$/, '')
 }
 
+/** Core machine token to present, if the operator configured one. */
+function coreToken() {
+  return (process.env.CORE_PAIR_TOKEN || process.env.CORE_API_TOKEN || '').trim()
+}
+
 /**
  * POST JSON without any browser Fetch metadata headers.
  * @param {string} url
@@ -38,6 +49,7 @@ function postJSON(url, body, timeoutMs) {
     const target = new URL(url)
     const payload = Buffer.from(JSON.stringify(body))
     const transport = target.protocol === 'https:' ? https : http
+    const token = coreToken()
     const request = transport.request({
       protocol: target.protocol,
       hostname: target.hostname,
@@ -48,6 +60,7 @@ function postJSON(url, body, timeoutMs) {
         'content-type': 'application/json',
         'content-length': payload.length,
         'user-agent': CLIENT_UA,
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
       },
     }, response => {
       response.resume()

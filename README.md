@@ -54,11 +54,16 @@ models, and they show up in the chat model picker. (No pairing is required;
 | `FREE_MODEL_REFRESH_MS` | `1800000` | Model-catalog refresh interval |
 | `OUR_FREE_MODEL_BASE` | `https://opencode.ai` | Upstream (tests only) |
 | `FREE_MODEL_CORE_HTTP` | `CORE_HTTP_ADDR` / `http://127.0.0.1:8080` | Core URL for registration |
+| `CORE_PAIR_TOKEN` / `CORE_API_TOKEN` | unset | Optional Core machine token; when set it is sent as `Authorization: Bearer …` on the provider registration call so registration keeps working even if loopback trust is tightened |
 
 ## Notes
 
 - The adapter binds to loopback and requires the local key on every model route;
   `/` and `/health` are liveness-only.
+- Provider registration (`POST /api/providers`) is a machine call: it sends no
+  browser Fetch metadata, so Core treats it as a trusted loopback caller. If the
+  deployment sets a Core token/PIN, export `CORE_PAIR_TOKEN` or `CORE_API_TOKEN`
+  for this plugin so the call stays authorised.
 - "Free" means no billing and no per-token charge, but the lane rate-limits per
   session; the adapter keeps one session per conversation so retries don't burn
   quota.
