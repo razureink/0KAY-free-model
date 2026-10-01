@@ -1,9 +1,9 @@
 {
   "name": "@razureink/0kay-free-model",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "private": true,
   "type": "module",
-  "description": "Our Free Model for 0KAY â€” the opencode Zen free model lane as a 0KAY provider, hosted by Core over stdio (no port).",
+  "description": "Our Free Model for 0KAY â€?the opencode Zen free model lane as a 0KAY provider, hosted by Core over stdio (no port).",
   "repository": "https://github.com/razureink/0KAY-free-model.git",
   "main": "src/stdio.mjs",
   "scripts": {
